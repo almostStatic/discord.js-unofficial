@@ -3,7 +3,6 @@ const fs = require('fs');
 const ms = require('ms');
 require("@keyv/sqlite");
 const defaults = require('./config.js');
-const Secure = require('./Secure.js');
 const express = require('express');
 const app = express();
 const delay = require('delay');
@@ -54,7 +53,7 @@ defaults.functions.getUserFromPing = function(mention, withID) {
 };
 
 client.functions = defaults.functions;
-client.config = new Object(defaults.config);
+client.config = new Object(defaults.statics);
 
 const commandFiles = fs.readdirSync('./cmds').filter(file => file.endsWith('.js'));
 
@@ -85,11 +84,12 @@ client.on('message', async message => {
 	if (message.guild) await message.guild.members.fetch();
 	if (message.author.bot) return;
 
-	const args = message.content.slice(client.config.prefix).split(/ +/g);
+	if (!message.content.toLowerCase().startsWith(client.config.prefix)) return;
+
+	const args = message.content.slice(client.config.prefix.length).split(/ +/g);
 	const commandName = args.shift().toLowerCase();
 
 	const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-
 	try {
 		await command.run(client, message, args);
 	} catch (e) {
@@ -108,5 +108,5 @@ process.on('unhandledRejection', (e) => {
 
 client.on('error', x => console.log(x));
 
-client.login(Secure.token);
+client.login(process.env.token);
 app.listen(3000, () => { console.clear(); console.log('server started');})
