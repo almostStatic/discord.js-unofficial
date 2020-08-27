@@ -20,11 +20,6 @@ const client = new Discord.Client({
 	},
 });
 
-const cantUsed = [
-	"Sorry m8, you're not allowed to use this command",
-	"You don't have permission to use this command!",
-];
-
 client.db = new keyv('sqlite://./database.sqlite')
 client.commands = new Discord.Collection();
 client.config = Object.freeze(defaults.statics);
@@ -53,7 +48,6 @@ defaults.functions.getUserFromPing = function(mention, withID) {
 };
 
 client.functions = defaults.functions;
-client.config = new Object(defaults.statics);
 
 const commandFiles = fs.readdirSync('./cmds').filter(file => file.endsWith('.js'));
 
@@ -90,11 +84,14 @@ client.on('message', async message => {
 	const commandName = args.shift().toLowerCase();
 
 	const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-
+	/**
+	 * Returns an insufficent perms message to the current channel 
+	 * @param {string} permName The permission name to which this permission will be referred to as within the message 
+	 */
 	async function insufficentModPerms(permName) {
 		return message.channel.send("You must have at least " + permName + " in order to use this command")
 	}
-
+console.log(command)//undefined
 	if (command.Moderator) {
 		if (command.Moderator == 'trial' && (!message.member.roles.cache.has(client.config.roles.TRIAL_MODERATOR))) {
 				return insufficentModPerms("Trial-Moderator")
