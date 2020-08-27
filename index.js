@@ -90,6 +90,21 @@ client.on('message', async message => {
 	const commandName = args.shift().toLowerCase();
 
 	const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+	async function insufficentModPerms(permName) {
+		return message.channel.send("You must have at least " + permName + " in order to use this command")
+	}
+
+	if (command.Moderator) {
+		if (command.Moderator == 'trial' && (!message.member.roles.cache.has(client.config.roles.TRIAL_MODERATOR))) {
+				return insufficentModPerms("Trial-Moderator")
+		} else if (command.Moderator == 'mod' && (!message.member.roles.cache.has(client.config.roles.MODERATOR))) {
+			return insufficentModPerms("Moderator");
+		} else if (command.Moderator == 'senior' && (!message.member.roles.cache.has(client.config.roles.TRIAL_MODERATOR))) {
+			return insufficentModPerms("Senior-Moderator")
+		};
+	};
+
 	try {
 		await command.run(client, message, args);
 	} catch (e) {

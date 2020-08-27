@@ -15,12 +15,12 @@ const config = {
   },
   statics: {
     prefix: '?',
-    owners: [],
+    owners: ['501710994293129216', '381490382183333899'],
     roles: {
-      TRIAL_MODERATOR: "",
-      MEMBER: "",
-      MODERATOR: "",
-      SENIOR_MODERATOR: ""//(admin)
+      TRIAL_MODERATOR: "748609282857107497",
+      MODERATOR: "748609821074260099",
+      SENIOR_MODERATOR: "748609976800378880",//(admin)
+			STAFF_TEAM: "748610501654609980"
     }
   }
 };
