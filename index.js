@@ -3,13 +3,13 @@ const fs = require('fs');
 const ms = require('ms');
 require("@keyv/sqlite");
 const defaults = require('./config.js');
+const Secure = require('./Secure.js');
 const express = require('express');
 const app = express();
 const delay = require('delay');
 const Discord = require('discord.js');
 const Intents = new Discord.Intents(Discord.Intents.NON_PRIVILEGED);
 Intents.add(['GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILDS']);
-const cooldowns = new Discord.Collection();
 const client = new Discord.Client({
 	disableMentions: 'everyone',
 	ws: {
@@ -27,7 +27,6 @@ const cantUsed = [
 ];
 
 client.db = new keyv('sqlite://./database.sqlite')
-//client.db = new keyv(`mysql://asadcode_admin:${process.env.DB_PASSWORD}@${process.env.srv}/asadcode_economist`)
 client.commands = new Discord.Collection();
 client.config = Object.freeze(defaults.statics);
 defaults.functions.usr = async function (str) {
@@ -109,5 +108,5 @@ process.on('unhandledRejection', (e) => {
 
 client.on('error', x => console.log(x));
 
-client.login(process.env.token);
+client.login(Secure.token);
 app.listen(3000, () => { console.clear(); console.log('server started');})
