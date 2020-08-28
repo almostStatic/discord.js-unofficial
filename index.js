@@ -28,7 +28,7 @@ defaults.functions.usr = async function (str) {
 	str = str.toString();
 	let usr;
 	try {
-		usr = await client.users.fetch(client.getID(str))
+		usr = await client.users.fetch(defaults.functions.getID(str))
 	} catch (err) {
 		usr = await client.users.fetch(str).catch((x) => {})
 	};	
@@ -70,6 +70,8 @@ client.on("messageDelete", async (message) => {
 
 client.on('ready', async() => {
 	console.log(`Logged in as ${client.user.tag}`);
+	await client.guilds.cache.get(client.config.guild).members.fetch();
+	console.log("Fetched Members.")
 });
 
 client.on('message', async message => {
@@ -81,9 +83,11 @@ client.on('message', async message => {
 	if (!message.content.toLowerCase().startsWith(client.config.prefix)) return;
 
 	const args = message.content.slice(client.config.prefix.length).split(/ +/g);
+
 	const commandName = args.shift().toLowerCase();
 
 	const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+	if (!command) return;
 	/**
 	 * Returns an insufficent perms message to the current channel 
 	 * @param {string} permName The permission name to which this permission will be referred to as within the message 
@@ -91,7 +95,7 @@ client.on('message', async message => {
 	async function insufficentModPerms(permName) {
 		return message.channel.send("You must have at least " + permName + " in order to use this command")
 	}
-console.log(command)//undefined
+
 	if (command.Moderator) {
 		if (command.Moderator == 'trial' && (!message.member.roles.cache.has(client.config.roles.TRIAL_MODERATOR))) {
 				return insufficentModPerms("Trial-Moderator")
